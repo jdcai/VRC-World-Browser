@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import { LimitedWorld } from "vrchat";
+import { LimitedWorld, World } from "vrchat";
 
 export const getWorlds = async (): Promise<LimitedWorld[]> => {
   // const response: AxiosResponse<LimitedWorld[]> = await axios.get(
@@ -8,5 +8,11 @@ export const getWorlds = async (): Promise<LimitedWorld[]> => {
   //     method: "GET",
   //   }
   // );
+  // return response.data;
+};
+export const getWorld = async (id: string): Promise<World> => {
+  // const response: AxiosResponse<World> = await axios.get(`/api/world/${id}`, {
+  //   method: "GET",
+  // });
   // return response.data;
 };

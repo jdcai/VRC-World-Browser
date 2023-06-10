@@ -139,6 +139,27 @@ app.get("/api/worlds", (req, res) => {
     });
 });
 
+app.get("/api/world/:id", (req, res) => {
+  const worldsApi = new vrchat.WorldsApi(
+    configuration,
+    undefined,
+    axiosConfiguration
+  );
+  const worldId = req.params.id;
+  if (req.params.id) {
+    worldsApi
+      .getWorld(worldId)
+      .then((resp) => {
+        const worlds = resp.data;
+        console.log("world");
+        res.send(worlds);
+      })
+      .catch((err) => {
+        res.status(500).send(`Error: ${err.message}`);
+      });
+  }
+});
+
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });

@@ -4,6 +4,15 @@ import { LimitedWorld } from "vrchat";
 import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import moment from "moment";
+import { Link } from "react-router-dom";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
 
 const WorldsContainer = styled.div`
   display: grid;
@@ -62,39 +71,46 @@ function App() {
     data: worlds,
     // isFetching,
   } = useQuery<LimitedWorld[], Error>({
-    queryKey: ["worldData"],
+    queryKey: ["worlds"],
     queryFn: getWorlds,
   });
 
-  if (isLoading) return "Loading...";
+  if (isLoading) return <div>Loading...</div>;
 
-  if (error) return "An error has occurred: " + error.message;
+  if (error) return <div>An error has occurred: {error.message}</div>;
 
   return (
-    <>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
       <h1>World browser</h1>
       <WorldsContainer>
         {worlds &&
           worlds.map((world) => {
             return (
               <WorldContainer key={world.id}>
-                <WorldImageContainer>
-                  <WorldThumbnail
-                    src={world?.thumbnailImageUrl}
-                    alt={world?.name}
-                  ></WorldThumbnail>
-                  <FavoriteCount>{world?.favorites} favorites</FavoriteCount>
-                  <CreatedDate>
-                    {moment(world?.created_at).fromNow()}
-                  </CreatedDate>
-                </WorldImageContainer>
+                <Link
+                  to={`/worlds/${world.id}`}
+                  state={{ world }}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <WorldImageContainer>
+                    <WorldThumbnail
+                      src={world?.thumbnailImageUrl}
+                      alt={world?.name}
+                    ></WorldThumbnail>
+                    <FavoriteCount>{world?.favorites} favorites</FavoriteCount>
+                    <CreatedDate>
+                      {moment(world?.created_at).fromNow()}
+                    </CreatedDate>
+                  </WorldImageContainer>
+                </Link>
                 <WorldTitle title={world?.name}>{world?.name}</WorldTitle>
                 <WorldBroadcaster>{world?.authorName}</WorldBroadcaster>
               </WorldContainer>
             );
           })}
       </WorldsContainer>
-    </>
+    </ThemeProvider>
   );
 }
 
