@@ -5,14 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-
-const darkTheme = createTheme({
-  palette: {
-    mode: "dark",
-  },
-});
 
 const WorldsContainer = styled.div`
   display: grid;
@@ -80,8 +72,7 @@ function App() {
   if (error) return <div>An error has occurred: {error.message}</div>;
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
+    <>
       <h1>World browser</h1>
       <WorldsContainer>
         {worlds &&
@@ -110,7 +101,7 @@ function App() {
             );
           })}
       </WorldsContainer>
-    </ThemeProvider>
+    </>
   );
 }
 

@@ -4,6 +4,8 @@ import moment from "moment";
 import { useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getWorld } from "../services/WorldService";
+import Chip from "@mui/material/Chip";
+import Stack from "@mui/material/Stack";
 
 const WorldContainer = styled.div`
   display: flex;
@@ -32,19 +34,24 @@ const World = () => {
   const {
     isLoading,
     error,
-    data: worldData,
+    data: detailedWorld,
     // isFetching,
   } = useQuery<VRWorld, Error>({
     queryKey: ["world", world.id],
     queryFn: () => getWorld(world.id),
-    staleTime: Infinity,
-    cacheTime: Infinity,
   });
 
   if (isLoading) return <div>Loading...</div>;
 
   if (error) return <div>An error has occurred: {error.message}</div>;
 
+  const tagPrefix = "author_tag_";
+  const formatTag = (tag: string) => {
+    return tag.startsWith(tagPrefix) ? tag.slice(tagPrefix.length) : tag;
+  };
+  const searchTag = (tag: string) => {
+    console.log(tag);
+  };
   return (
     <>
       {world && (
@@ -53,9 +60,14 @@ const World = () => {
           <WorldInfoContainer>
             <h2>{world.name}</h2>
             <h3>By {world.authorName}</h3>
-            <div>{worldData.description}</div>
+            <div>{detailedWorld.description}</div>
             <div>{world.favorites} favorites</div>
             <div>Created {moment(world?.created_at).fromNow()}</div>
+            <Stack direction="row" spacing={1}>
+              {world.tags.map((tag) => (
+                <Chip onClick={() => searchTag(tag)} label={formatTag(tag)} />
+              ))}
+            </Stack>
           </WorldInfoContainer>
         </WorldContainer>
       )}
