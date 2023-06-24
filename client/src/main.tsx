@@ -1,11 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import World from "./worlds/World.tsx";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import Toolbar from "@mui/material/Toolbar";
+import Header from "./Header.tsx";
+import Worlds from "./worlds/Worlds.tsx";
 
 const darkTheme = createTheme({
   palette: {
@@ -18,11 +20,20 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
-  },
-  {
-    path: "/worlds/:worldId",
-    element: <World />,
+    element: (
+      <>
+        <Header />
+        <Toolbar />
+        <Outlet />
+      </>
+    ),
+    children: [
+      { path: "/", element: <Worlds /> },
+      {
+        path: "/worlds/:worldId",
+        element: <World />,
+      },
+    ],
   },
 ]);
 
