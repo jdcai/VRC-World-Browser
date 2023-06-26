@@ -22,27 +22,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-
-enum SortOption {
-  Popularity = "popularity",
-  Heat = "heat",
-  Trust = "trust",
-  Shuffle = "shuffle",
-  Random = "random",
-  Favorites = "favorites",
-  ReportScore = "reportScore",
-  ReportCount = "reportCount",
-  PublicationDate = "publicationDate",
-  LabsPublicationDate = "labsPublicationDate",
-  Created = "created",
-  CreatedAt = "_created_at",
-  Updated = "updated",
-  UpdatedAt = "_updated_at",
-  Order = "order",
-  Relevance = "relevance",
-  Magic = "magic",
-  Name = "name",
-}
+import { SortOption, getWorld } from "./services/WorldService";
 
 const ToolbarContainer = styled(Toolbar)`
   column-gap: ${(props) => props.theme.spacing(1)};

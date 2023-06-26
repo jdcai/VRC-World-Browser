@@ -4,6 +4,27 @@ import worlds from "../mockdata/worlds.json";
 import world from "../mockdata/world.json";
 
 export const getWorlds = async (): Promise<LimitedWorld[]> => {
+export enum SortOption {
+  Popularity = "popularity",
+  Heat = "heat",
+  Trust = "trust",
+  Shuffle = "shuffle",
+  Random = "random",
+  Favorites = "favorites",
+  ReportScore = "reportScore",
+  ReportCount = "reportCount",
+  PublicationDate = "publicationDate",
+  LabsPublicationDate = "labsPublicationDate",
+  Created = "created",
+  CreatedAt = "_created_at",
+  Updated = "updated",
+  UpdatedAt = "_updated_at",
+  Order = "order",
+  Relevance = "relevance",
+  Magic = "magic",
+  Name = "name",
+}
+
   // const response: AxiosResponse<LimitedWorld[]> = await axios.get(
   //   "/api/worlds",
   //   {
