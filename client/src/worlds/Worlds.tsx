@@ -1,4 +1,4 @@
-import { getWorlds } from "../services/WorldService";
+import { SortOption, getSortOptionFromString, getWorlds } from "../services/WorldService";
 import { LimitedWorld } from "vrchat";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
@@ -63,9 +63,9 @@ const NoDecorationLink = styled(Link)`
     color: inherit;
 `;
 
-const worldsQuery = () => ({
-    queryKey: ["worlds"],
-    queryFn: getWorlds,
+const worldsQuery = (q: string | null, tags: string[] | undefined, sort: string) => ({
+    queryKey: ["worlds", q, tags, sort],
+    queryFn: () => getWorlds(q, tags, sort as SortOption),
     staleTime: Infinity,
 });
 
@@ -75,21 +75,22 @@ export const loader =
         const url = new URL(request.url);
         const q = url.searchParams.get("q");
         const tags = url.searchParams.get("tags")?.split(",");
+        const sort = getSortOptionFromString(url.searchParams.get("sort"));
         console.log("test");
-        if (!queryClient.getQueryData(worldsQuery().queryKey)) {
-            await queryClient.fetchQuery(worldsQuery());
+        if (!queryClient.getQueryData(worldsQuery(q, tags, sort).queryKey)) {
+            await queryClient.fetchQuery(worldsQuery(q, tags, sort));
         }
-        return { q, tags };
+        return { q, tags, sort };
     };
 
 function Worlds() {
-    const { q, tags } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>;
+    const { q, tags, sort } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>;
     const {
         isLoading,
         error,
         data: worlds,
         // isFetching,
-    } = useQuery<LimitedWorld[], Error>(worldsQuery());
+    } = useQuery<LimitedWorld[], Error>(worldsQuery(q, tags, sort));
 
     if (isLoading) return <div>Loading...</div>;
 

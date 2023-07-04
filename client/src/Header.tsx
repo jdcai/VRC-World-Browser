@@ -15,7 +15,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import styled from "styled-components";
 import { Form, Link, useSearchParams } from "react-router-dom";
-import { SortOption } from "./services/WorldService";
+import { SortOption, getSortOptionFromString } from "./services/WorldService";
 
 const StyledForm = styled(Form)`
     width: 100%;
@@ -47,15 +47,12 @@ const HomeLink = styled(Link)`
 const Header = () => {
     let [searchParams, setSearchParams] = useSearchParams();
 
-    const [sortOption, setSortOption] = useState(
-        searchParams.get("sort") !== null && Object.values(SortOption).includes(searchParams.get("sort") as SortOption)
-            ? (searchParams.get("sort") as SortOption)
-            : SortOption.Random,
-    );
+    const [sortOption, setSortOption] = useState(getSortOptionFromString(searchParams.get("sort")));
 
     const [tags, setTags] = useState<string[]>(
         searchParams.get("tags") ? searchParams.get("tags")?.split(",") ?? [] : [],
     );
+    const [tagInput, setTagInput] = useState<string>("");
 
     const handleSortChange = (event: SelectChangeEvent<SortOption>) => {
         setSortOption(event.target.value as SortOption);
@@ -64,12 +61,26 @@ const Header = () => {
     const handleTagsChange = (_0: any, value: string[]) => {
         setTags(value);
     };
+    const handleTagInputChange = (_0: any, value: string) => {
+        setTagInput(value);
+    };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const params = new URLSearchParams(formData as any);
-        params.set("tags", tags.join());
+        if (!params.get("q")) {
+            params.delete("q");
+        }
+        if (tags.length > 0 || tagInput) {
+            if (tagInput) {
+                tags.push(tagInput);
+                setTagInput("");
+            }
+            params.set("tags", tags.join());
+        } else {
+            params.delete("tags");
+        }
         params.set("sort", sortOption);
         setSearchParams(params);
     };
@@ -103,6 +114,9 @@ const Header = () => {
                             options={[]}
                             autoComplete={false}
                             value={tags}
+                            onChange={handleTagsChange}
+                            inputValue={tagInput}
+                            onInputChange={handleTagInputChange}
                             renderTags={(value, getTagProps) => {
                                 const numTags = value.length;
                                 const limitTags = 5;
@@ -125,7 +139,6 @@ const Header = () => {
                                     </>
                                 );
                             }}
-                            onChange={handleTagsChange}
                             renderInput={(params: AutocompleteRenderInputParams) => {
                                 const { InputProps, ...restParams } = params;
                                 const { startAdornment, ...restInputProps } = InputProps;

@@ -24,10 +24,17 @@ export enum SortOption {
     Name = "name",
 }
 
-export const getWorlds = async (): // searchTerm: string,
-// tags: string[],
-// sortOption: SortOption
-Promise<LimitedWorld[]> => {
+export const getSortOptionFromString = (sort: string | null) => {
+    return sort !== null && Object.values(SortOption).includes(sort as SortOption)
+        ? (sort as SortOption)
+        : SortOption.Random;
+};
+
+export const getWorlds = async (
+    searchTerm: string | null,
+    tags: string[] | undefined,
+    sortOption: SortOption,
+): Promise<LimitedWorld[]> => {
     // const response: AxiosResponse<LimitedWorld[]> = await axios.get(
     //   "/api/worlds",
     //   {
