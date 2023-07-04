@@ -960,7 +960,17 @@ touch@^3.1.0:
   dependencies:
     nopt "~1.0.10"
 
-tough-cookie@^4.0.0, tough-cookie@^4.1.2:
+tough-cookie@^4.0.0:
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-4.1.3.tgz#97b9adb0728b42280aa3d814b6b999b2ff0318bf"
+  integrity sha512-aX/y5pVRkfRnfmuX+OdbSdXvPe6ieKX/G2s7e98f4poJHnqH3281gDPm/metm6E/WRamfx7WC4HUqkWHfQHprw==
+  dependencies:
+    psl "^1.1.33"
+    punycode "^2.1.1"
+    universalify "^0.2.0"
+    url-parse "^1.5.3"
+
+tough-cookie@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/tough-cookie/-/tough-cookie-4.1.2.tgz#e53e84b85f24e0b65dd526f46628db6c85f6b874"
   integrity sha512-G9fqXWoYFZgTc2z8Q5zaHy/vJMjm+WV0AkAeHxVCQiEB1b+dGvWzFW6QV07cY5jQ5gRkeid2qIkzkxUnmoQZUQ==
@@ -1027,9 +1037,9 @@ vary@~1.1.2:
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
 vrchat@^1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/vrchat/-/vrchat-1.11.1.tgz#acf37426f717c9cfb60d37ef50131b0c94704c0c"
-  integrity sha512-zQ+wXN3fnf5y7oVbRQw99JKx8DIQ2xfLxSpR8Yw0SQBOHfgXLrdOQw9MofoHQbW1Rqmj+LnvRiNh9bZM/ffEcw==
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/vrchat/-/vrchat-1.12.0.tgz#b78807c4bda0cae9668cb644ef33ae3622aa0f1d"
+  integrity sha512-A6rFbXe6uGh/B2OOdjjhc06qAsHjbWWx5KTE7RaiFxZdKpxBQRR/TwyoiIxnAhkIP3nRUA77j449F1vUH4diSA==
   dependencies:
     "@types/tough-cookie" "^4.0.1"
     axios "^0.26.1"
