@@ -3,7 +3,7 @@ import { LimitedWorld } from "vrchat";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import moment from "moment";
-import { Link, useLoaderData } from "react-router-dom";
+import { Link, useLoaderData, Await, defer, useNavigation } from "react-router-dom";
 import Tags from "../tags/Tags";
 import { Typography } from "@mui/material";
 
@@ -66,7 +66,6 @@ const NoDecorationLink = styled(Link)`
 const worldsQuery = (q: string | null, tags: string[] | undefined, sort: string) => ({
     queryKey: ["worlds", q, tags, sort],
     queryFn: () => getWorlds(q, tags, sort as SortOption),
-    staleTime: Infinity,
 });
 
 export const loader =
@@ -85,16 +84,18 @@ export const loader =
 
 function Worlds() {
     const { q, tags, sort } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>;
+    const { state } = useNavigation();
     const {
         isLoading,
         error,
         data: worlds,
         // isFetching,
-    } = useQuery<LimitedWorld[], Error>(worldsQuery(q, tags, sort));
+    } = useQuery<LimitedWorld[] | null, Error>(worldsQuery(q, tags, sort));
+    if (state === "loading") {
+        return <div>Loading...</div>;
+    }
 
-    if (isLoading) return <div>Loading...</div>;
-
-    if (error) return <div>An error has occurred: {error.message}</div>;
+    if (worlds === null) return <div>An error has occurred</div>;
 
     return (
         <>
@@ -103,7 +104,7 @@ function Worlds() {
                     worlds.map((world) => {
                         return (
                             <WorldContainer key={world.id}>
-                                <NoDecorationLink to={`/worlds/${world.id}`} state={{ world }}>
+                                <NoDecorationLink to={`/world/${world.id}`} state={{ world }}>
                                     <WorldImageContainer>
                                         <WorldThumbnail src={world.thumbnailImageUrl} alt={world.name}></WorldThumbnail>
                                         <FavoriteCount>{world.favorites} favorites</FavoriteCount>
@@ -111,7 +112,7 @@ function Worlds() {
                                     </WorldImageContainer>
                                 </NoDecorationLink>
                                 <WorldTitle variant="body1">
-                                    <NoDecorationLink to={`/worlds/${world.id}`} state={{ world }} title={world.name}>
+                                    <NoDecorationLink to={`/world/${world.id}`} state={{ world }} title={world.name}>
                                         {world.name}
                                     </NoDecorationLink>
                                 </WorldTitle>

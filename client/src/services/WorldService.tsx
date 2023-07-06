@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { LimitedWorld, World } from "vrchat";
-import worlds from "../mockdata/worlds.json";
-import world from "../mockdata/world.json";
+// import worlds from "../mockdata/worlds.json";
+// import world from "../mockdata/world.json";
 
 export enum SortOption {
     Popularity = "popularity",
@@ -31,25 +31,49 @@ export const getSortOptionFromString = (sort: string | null) => {
 };
 
 export const getWorlds = async (
-    searchTerm: string | null,
+    q: string | null,
     tags: string[] | undefined,
-    sortOption: SortOption,
-): Promise<LimitedWorld[]> => {
-    // const response: AxiosResponse<LimitedWorld[]> = await axios.get(
-    //   "/api/worlds",
-    //   {
-    //     method: "GET",
-    //   }
-    // );
-    // return response.data;
-    return worlds as LimitedWorld[];
+    sort: SortOption,
+): Promise<LimitedWorld[] | null> => {
+
+    try {
+        const response: AxiosResponse<LimitedWorld[]> = await axios.get("/api/worlds", {
+            method: "GET",
+            params: {
+                q,
+                tags,
+                sort,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.log(error.status);
+            console.error(error.response);
+        } else {
+            console.error(error);
+        }
+        return null;
+    }
+    // return worlds as LimitedWorld[];
 };
 
-export const getWorld = async (id: string): Promise<World> => {
-    // const response: AxiosResponse<World> = await axios.get(`/api/world/${id}`, {
-    //   method: "GET",
-    // });
-    // return response.data;
+export const getWorld = async (id: string): Promise<World | null> => {
 
-    return world as World;
+    try {
+        const response: AxiosResponse<World> = await axios.get(`/api/world/${id}`, {
+            method: "GET",
+        });
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.log(error.status);
+            console.error(error.response);
+        } else {
+            console.error(error);
+        }
+        return null;
+    }
+
+    // return world as World;
 };

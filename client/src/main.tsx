@@ -8,6 +8,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import Header from "./Header.tsx";
 import Worlds, { loader as worldsLoader } from "./worlds/Worlds.tsx";
+import { loader as worldLoader } from "./worlds/World.tsx";
 
 const darkTheme = createTheme({
     palette: {
@@ -15,7 +16,14 @@ const darkTheme = createTheme({
     },
 });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+    defaultOptions: {
+        queries: {
+            staleTime: 15000,
+            // refetchOnWindowFocus: false,
+        },
+    },
+});
 
 const router = createBrowserRouter([
     {
@@ -30,8 +38,9 @@ const router = createBrowserRouter([
         children: [
             { path: "/", element: <Worlds />, loader: worldsLoader(queryClient) },
             {
-                path: "/worlds/:worldId",
+                path: "/world/:worldId",
                 element: <World />,
+                loader: worldLoader(queryClient),
             },
         ],
     },
