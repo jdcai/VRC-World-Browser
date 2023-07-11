@@ -31,7 +31,7 @@ export const getSortOptionFromString = (sort: string | null) => {
 };
 
 export const getTagsFromString = (tags: string | null) => {
-    return tags?.split(",") ?? [];
+    return tags?.split(",") ?? ["system_approved"];
 };
 
 export const getWorlds = async (
@@ -39,8 +39,9 @@ export const getWorlds = async (
     tags: string[] | undefined,
     sort: SortOption,
 ): Promise<LimitedWorld[] | null> => {
-
-    const formattedTags = tags?.map((tag) => `author_tag_${tag}`);
+    const formattedTags = tags?.map((tag) =>
+        !tag.startsWith("system_") && !tag.startsWith("admin_") ? `author_tag_${tag}` : tag,
+    );
     try {
         const response: AxiosResponse<LimitedWorld[]> = await axios.get("/api/worlds", {
             method: "GET",
@@ -64,7 +65,6 @@ export const getWorlds = async (
 };
 
 export const getWorld = async (id: string): Promise<World | null> => {
-
     try {
         const response: AxiosResponse<World> = await axios.get(`/api/world/${id}`, {
             method: "GET",

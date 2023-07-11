@@ -8,7 +8,6 @@ const TagContainer = styled.div`
     gap: ${(props) => props.theme.spacing(1)};
 `;
 
-// Todo: handle admin and system tags
 const tagPrefix = "author_tag_";
 
 type TagsProps = {
