@@ -30,18 +30,23 @@ export const getSortOptionFromString = (sort: string | null) => {
         : SortOption.Random;
 };
 
+export const getTagsFromString = (tags: string | null) => {
+    return tags?.split(",") ?? [];
+};
+
 export const getWorlds = async (
     q: string | null,
     tags: string[] | undefined,
     sort: SortOption,
 ): Promise<LimitedWorld[] | null> => {
 
+    const formattedTags = tags?.map((tag) => `author_tag_${tag}`);
     try {
         const response: AxiosResponse<LimitedWorld[]> = await axios.get("/api/worlds", {
             method: "GET",
             params: {
                 q,
-                tags,
+                tags: formattedTags,
                 sort,
             },
         });

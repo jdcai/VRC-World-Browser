@@ -1,4 +1,5 @@
 import { Chip } from "@mui/material";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 
 const TagContainer = styled.div`
@@ -9,22 +10,39 @@ const TagContainer = styled.div`
 
 const tagPrefix = "author_tag_";
 
-const formatTag = (tag: string) => {
-    return tag.startsWith(tagPrefix) ? tag.slice(tagPrefix.length) : tag;
-};
-
 type TagsProps = {
     tags: string[];
 };
-const searchTag = (tag: string) => {
-    console.log(tag);
-};
 
-const Tags = ({ tags }: TagsProps) => {
+const Tags = ({ tags, ...props }: TagsProps) => {
+    let [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+
+    const formatTag = (tag: string) => {
+        return tag.startsWith(tagPrefix) ? tag.slice(tagPrefix.length) : tag;
+    };
+
+    const searchTag = (tag: string) => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete("q");
+
+        newSearchParams.set("tags", formatTag(tag));
+
+        navigate(`/?${newSearchParams.toString()}`);
+    };
+
     return (
-        <TagContainer>
+        <TagContainer {...props}>
             {tags.map((tag) => (
-                <Chip key={tag} onClick={() => searchTag(tag)} label={formatTag(tag)} size="small" />
+                <Chip
+                    // component={Link}
+                    // to={`/?tags=${formatTag(tag)}`}
+                    onClick={() => searchTag(tag)}
+                    key={tag}
+                    label={formatTag(tag)}
+                    size="small"
+                    // clickable
+                />
             ))}
         </TagContainer>
     );

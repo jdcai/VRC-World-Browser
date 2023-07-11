@@ -90,7 +90,13 @@ const getSortOptionFromString = (sort: string | undefined) => {
         : SortOption.Random;
 };
 
-app.get("/api/worlds", (req, res) => {
+type WorldsQuery = {
+    q: string;
+    sort: string;
+    tags: string[];
+};
+
+app.get("/api/worlds", (req: Request<{}, {}, {}, WorldsQuery>, res) => {
     const worldsApi = new WorldsApi(configuration, undefined, axiosConfiguration);
     const options = {
         featured: false,
@@ -101,7 +107,7 @@ app.get("/api/worlds", (req, res) => {
         order: OrderOption.Descending,
         offset: 0,
         search: req.query.q?.toString(),
-        tag: undefined,
+        tag: req.query.tags?.join(),
         notag: undefined,
         releaseStatus: ReleaseStatus.Public,
         maxUnityVersion: undefined,

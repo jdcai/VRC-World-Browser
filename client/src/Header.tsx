@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import {
     AppBar,
     Toolbar,
@@ -15,7 +15,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import styled from "styled-components";
 import { Form, Link, useSearchParams } from "react-router-dom";
-import { SortOption, getSortOptionFromString } from "./services/WorldService";
+import { SortOption, getSortOptionFromString, getTagsFromString } from "./services/WorldService";
 
 const StyledForm = styled(Form)`
     width: 100%;
@@ -24,22 +24,22 @@ const StyledForm = styled(Form)`
     align-items: center;
 `;
 
-const AppBarContainer = styled(AppBar)`
+const StyledAppBar = styled(AppBar)`
     z-index: ${(props) => props.theme.zIndex.drawer + 1};
 `;
 
-const CustomTextField = styled(TextField)`
+const StyledTextField = styled(TextField)`
     & .MuiFormHelperText-root.Mui-error {
         position: absolute;
         top: 80%;
     }
 `;
 
-const SearchTextField = styled(CustomTextField)`
+const StyledSearchTextField = styled(StyledTextField)`
     max-width: 30%;
 `;
 
-const HomeLink = styled(Link)`
+const StyledHomeLink = styled(Link)`
     text-decoration: none;
     color: inherit;
 `;
@@ -47,11 +47,10 @@ const HomeLink = styled(Link)`
 const Header = () => {
     let [searchParams, setSearchParams] = useSearchParams();
 
+    const [searchTerm, setSearchTerm] = useState(searchParams.get("q") ?? "");
     const [sortOption, setSortOption] = useState(getSortOptionFromString(searchParams.get("sort")));
 
-    const [tags, setTags] = useState<string[]>(
-        searchParams.get("tags") ? searchParams.get("tags")?.split(",") ?? [] : [],
-    );
+    const [tags, setTags] = useState<string[]>(getTagsFromString(searchParams.get("tags")));
     const [tagInput, setTagInput] = useState<string>("");
 
     const handleSortChange = (event: SelectChangeEvent<SortOption>) => {
@@ -63,6 +62,10 @@ const Header = () => {
     };
     const handleTagInputChange = (_0: any, value: string) => {
         setTagInput(value);
+    };
+
+    const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
     };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -85,18 +88,26 @@ const Header = () => {
         setSearchParams(params);
     };
 
+    useEffect(() => {
+        setTags(getTagsFromString(searchParams.get("tags")));
+        setSortOption(getSortOptionFromString(searchParams.get("sort")));
+        setSearchTerm(searchParams.get("q") ?? "");
+    }, [searchParams]);
+
     return (
         <>
-            <AppBarContainer position="fixed">
+            <StyledAppBar position="fixed">
                 <Toolbar>
                     {/* Can search world ands authors? */}
                     <StyledForm method="get" id="search-form" role="search" onSubmit={handleSubmit}>
-                        <HomeLink to={`/`}>
+                        <StyledHomeLink to={`/`}>
                             <Typography variant="h6">Worlds</Typography>
-                        </HomeLink>
-                        <SearchTextField
+                        </StyledHomeLink>
+                        <StyledSearchTextField
                             name="q"
-                            defaultValue={searchParams.get("q")}
+                            // defaultValue={searchParams.get("q")}
+                            value={searchTerm}
+                            onChange={handleSearchChange}
                             // error={hasUserError}
                             // helperText={hasUserError ? "User does not exist" : ""}
                             label="Search"
@@ -140,10 +151,10 @@ const Header = () => {
                                 );
                             }}
                             renderInput={(params: AutocompleteRenderInputParams) => {
-                                const { InputProps, ...restParams } = params;
-                                const { startAdornment, ...restInputProps } = InputProps;
+                                // const { InputProps, ...restParams } = params;
+                                // const { startAdornment, ...restInputProps } = InputProps;
                                 return (
-                                    <CustomTextField
+                                    <StyledTextField
                                         {...params}
                                         // error={hasUserError}
                                         // helperText={hasUserError ? "User does not exist" : ""}
@@ -189,7 +200,7 @@ const Header = () => {
                         </IconButton>
                     </StyledForm>
                 </Toolbar>
-            </AppBarContainer>
+            </StyledAppBar>
         </>
     );
 };
