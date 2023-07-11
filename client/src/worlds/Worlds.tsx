@@ -78,7 +78,7 @@ export const loader =
         const q = url.searchParams.get("q");
         const tags = url.searchParams.get("tags")?.split(",");
         const sort = getSortOptionFromString(url.searchParams.get("sort"));
-        console.log("test");
+
         if (!queryClient.getQueryData(worldsQuery(q, tags, sort).queryKey)) {
             await queryClient.fetchQuery(worldsQuery(q, tags, sort));
         }
@@ -95,7 +95,7 @@ function Worlds() {
         // isFetching,
     } = useQuery<LimitedWorld[] | null, Error>(worldsQuery(q, tags, sort));
     // } = useQuery<LimitedWorld[], Error>(worldsQuery("q", [], ""));
-    console.log(state);
+
     if (state === "loading") {
         return <div>Loading...</div>;
     }

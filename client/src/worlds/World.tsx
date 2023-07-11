@@ -46,7 +46,7 @@ const worldQuery = (worldId: string) => ({
 export const loader =
     (queryClient: QueryClient) =>
     async ({ params }: { params: Params<string> }) => {
-        console.log("world", params);
+        // console.log("world", params);
         if (params.worldId) {
             const query = worldQuery(params.worldId);
 
