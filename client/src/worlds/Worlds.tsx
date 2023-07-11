@@ -3,9 +3,10 @@ import { LimitedWorld } from "vrchat";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import styled from "styled-components";
 import moment from "moment";
-import { Link, useLoaderData, Await, defer, useNavigation } from "react-router-dom";
+import { Link, useLoaderData, useNavigation } from "react-router-dom";
 import Tags from "../tags/Tags";
 import { Typography } from "@mui/material";
+import StarOutlineIcon from "@mui/icons-material/StarOutline";
 
 const WorldsContainer = styled.div`
     display: grid;
@@ -52,9 +53,11 @@ const WorldInfo = styled.div`
 
 const FavoriteCount = styled(WorldInfo)`
     bottom: 0;
+    display: flex;
+    align-items: center;
 `;
 
-const CreatedDate = styled(WorldInfo)`
+const UpdatedData = styled(WorldInfo)`
     bottom: 0;
     right: 0;
 `;
@@ -86,11 +89,13 @@ function Worlds() {
     const { q, tags, sort } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>;
     const { state } = useNavigation();
     const {
-        isLoading,
-        error,
+        // isLoading,
+        // error,
         data: worlds,
         // isFetching,
     } = useQuery<LimitedWorld[] | null, Error>(worldsQuery(q, tags, sort));
+    // } = useQuery<LimitedWorld[], Error>(worldsQuery("q", [], ""));
+    console.log(state);
     if (state === "loading") {
         return <div>Loading...</div>;
     }
@@ -107,8 +112,10 @@ function Worlds() {
                                 <NoDecorationLink to={`/world/${world.id}`} state={{ world }}>
                                     <WorldImageContainer>
                                         <WorldThumbnail src={world.thumbnailImageUrl} alt={world.name}></WorldThumbnail>
-                                        <FavoriteCount>{world.favorites} favorites</FavoriteCount>
-                                        <CreatedDate>{moment(world.created_at).fromNow()}</CreatedDate>
+                                        <FavoriteCount>
+                                            {world.favorites.toLocaleString()} <StarOutlineIcon fontSize="small" />
+                                        </FavoriteCount>
+                                        <UpdatedData>Updated {moment(world.updated_at).fromNow()}</UpdatedData>
                                     </WorldImageContainer>
                                 </NoDecorationLink>
                                 <WorldTitle variant="body1">

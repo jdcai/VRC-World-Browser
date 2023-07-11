@@ -1,18 +1,11 @@
-import { LimitedWorld, SortOption, World as VRWorld } from "vrchat";
+import { World as VRWorld } from "vrchat";
 import styled from "styled-components";
 import moment from "moment";
-import {
-    LoaderFunctionArgs,
-    Params,
-    useLoaderData,
-    useLocation,
-    useNavigate,
-    useNavigation,
-    useParams,
-} from "react-router-dom";
-import { QueryClient, useQuery } from "@tanstack/react-query";
-import { getWorld, getWorlds } from "../services/WorldService";
+import { Params, useLoaderData, useNavigation } from "react-router-dom";
+import { QueryClient } from "@tanstack/react-query";
+import { getWorld } from "../services/WorldService";
 import Tags from "../tags/Tags";
+import { Button } from "@mui/material";
 
 const WorldContainer = styled.div`
     display: flex;
@@ -22,12 +15,27 @@ const WorldContainer = styled.div`
 `;
 
 const WorldInfoContainer = styled.div`
-    padding: 1rem;
-    max-width: 33.33%;
+    row-gap: ${(props) => props.theme.spacing(1)};
+    padding: ${(props) => props.theme.spacing(2)};
 `;
 
 const WorldImage = styled.img`
     max-width: 66.67%;
+`;
+const StyledTags = styled(Tags)`
+    margin-top: ${(props) => props.theme.spacing(1)};
+`;
+
+const StyledButtonContainer = styled.div`
+    margin-top: auto;
+    margin-left: auto;
+    margin-right: ${(props) => props.theme.spacing(2)};
+`;
+
+const StyledWorldContainerRight = styled.div`
+    display: flex;
+    flex-direction: column;
+    max-width: 33.33%;
 `;
 
 const worldQuery = (worldId: string) => ({
@@ -38,6 +46,7 @@ const worldQuery = (worldId: string) => ({
 export const loader =
     (queryClient: QueryClient) =>
     async ({ params }: { params: Params<string> }) => {
+        console.log("world", params);
         if (params.worldId) {
             const query = worldQuery(params.worldId);
 
@@ -47,7 +56,6 @@ export const loader =
     };
 
 const World = () => {
-
     const world = useLoaderData() as VRWorld;
     const { state } = useNavigation();
     if (state === "loading") return <div>Loading...</div>;
@@ -59,15 +67,23 @@ const World = () => {
             {world && (
                 <WorldContainer>
                     <WorldImage src={world.imageUrl} alt={world.name} />
-                    <WorldInfoContainer>
-                        <h2>{world.name}</h2>
-                        <h3>By {world.authorName}</h3>
-                        <div>{world.description}</div>
-                        <div>{world.favorites} favorites</div>
-                        <div>Created {moment(world?.created_at).fromNow()}</div>
+                    <StyledWorldContainerRight>
+                        <WorldInfoContainer>
+                            <h2>{world.name}</h2>
+                            <h3>By {world.authorName}</h3>
+                            <div>{world.description}</div>
+                            <div>{world.favorites?.toLocaleString()} favorites</div>
+                            <div>Updated {moment(world.updated_at).fromNow()}</div>
+                            <div>Created {moment(world.created_at).fromNow()}</div>
 
-                        <Tags tags={world.tags} />
-                    </WorldInfoContainer>
+                            <StyledTags tags={world.tags} />
+                        </WorldInfoContainer>
+                        <StyledButtonContainer>
+                            <Button href={`https://vrchat.com/home/world/${world.id}`} variant="outlined">
+                                View on VR chat
+                            </Button>
+                        </StyledButtonContainer>
+                    </StyledWorldContainerRight>
                 </WorldContainer>
             )}
         </>
