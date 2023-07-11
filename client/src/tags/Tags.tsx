@@ -1,5 +1,5 @@
 import { Chip } from "@mui/material";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 
 const TagContainer = styled.div`
