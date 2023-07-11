@@ -1,17 +1,25 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
 import { wrapper } from "axios-cookiejar-support";
 import { AuthenticationApi, Configuration, OrderOption, ReleaseStatus, SortOption, WorldsApi } from "vrchat";
 import fs from "fs";
 import tough from "tough-cookie";
 import totp from "totp-generator";
 import rateLimit, { RateLimitedAxiosInstance } from "axios-rate-limit";
+import path from "path";
 
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
+
+app.use(express.static("public"));
+app.use(express.json());
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 const configuration = new Configuration({
     username: process.env.USER,
@@ -32,18 +40,19 @@ axiosConfiguration.defaults.withCredentials = true;
 
 async function initVRC() {
     try {
-        // Step 2. VRChat consists of several API's (WorldsApi, UsersApi, FilesApi, NotificationsApi, FriendsApi, etc...)
-        // Here we instantiate the Authentication API which is required for logging in.
-        const authenticationApi = new AuthenticationApi(configuration, undefined, axiosConfiguration);
-
         let data = fs.readFileSync("./cookies.json", "utf-8");
-
         if (data !== "") {
             let cookies = JSON.parse(data);
             axiosConfiguration.defaults.jar = tough.CookieJar.fromJSON(cookies);
         } else {
             axiosConfiguration.defaults.jar = new tough.CookieJar();
         }
+    } catch (e) {
+        console.log(e);
+        axiosConfiguration.defaults.jar = new tough.CookieJar();
+    }
+    try {
+        const authenticationApi = new AuthenticationApi(configuration, undefined, axiosConfiguration);
 
         axiosConfiguration.defaults.jar.setCookie(
             new tough.Cookie({
@@ -53,7 +62,6 @@ async function initVRC() {
             "https://api.cloud",
         );
 
-        // // Step 3. Calling getCurrentUser on Authentication API logs you in if the user isn't already logged in.
         let userResponse = await authenticationApi.getCurrentUser();
 
         if (!userResponse.data.displayName) {
@@ -135,7 +143,7 @@ app.get("/api/worlds", (req: Request<{}, {}, {}, WorldsQuery>, res) => {
         )
         .then((resp) => {
             const worlds = resp.data;
-
+            console.log("worlds");
             res.send(worlds);
         })
         .catch((err) => {
@@ -151,6 +159,7 @@ app.get("/api/world/:id", (req, res) => {
             .getWorld(worldId)
             .then((resp) => {
                 const worlds = resp.data;
+                console.log("world");
                 res.send(worlds);
             })
             .catch((err) => {
