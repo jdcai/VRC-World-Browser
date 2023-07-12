@@ -1,1 +1,0 @@
-# VRC-World-Browser
