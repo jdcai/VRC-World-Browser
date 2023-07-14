@@ -31,7 +31,7 @@ export const getSortOptionFromString = (sort: string | null) => {
 };
 
 export const getTagsFromString = (tags: string | null) => {
-    return tags?.split(",") ?? ["system_approved"];
+    return tags?.split(",") ?? [];
 };
 
 export const getWorlds = async (

@@ -1,11 +1,11 @@
 import { SortOption, getSortOptionFromString, getWorlds } from "../services/WorldService";
 import { LimitedWorld } from "vrchat";
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import styled from "styled-components";
 import moment from "moment";
-import { Link, useLoaderData, useNavigation } from "react-router-dom";
+import { Link, redirect, useLoaderData, useNavigation } from "react-router-dom";
 import Tags from "../tags/Tags";
-import { Typography } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 
 const WorldsContainer = styled.div`
@@ -66,6 +66,15 @@ const NoDecorationLink = styled(Link)`
     color: inherit;
 `;
 
+const CenteredContainer = styled.div`
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-top: ${(props) => props.theme.spacing(2)};
+`;
+
 const worldsQuery = (q: string | null, tags: string[] | undefined, sort: string) => ({
     queryKey: ["worlds", q, tags, sort],
     queryFn: () => getWorlds(q, tags, sort as SortOption),
@@ -76,31 +85,32 @@ export const loader =
     async ({ request }: any) => {
         const url = new URL(request.url);
         const q = url.searchParams.get("q");
-        const tags = url.searchParams.get("tags")?.split(",");
-        const sort = getSortOptionFromString(url.searchParams.get("sort"));
+        let tags = url.searchParams.get("tags")?.split(",");
+        let sort = url.searchParams.get("sort");
 
-        if (!queryClient.getQueryData(worldsQuery(q, tags, sort).queryKey)) {
-            await queryClient.fetchQuery(worldsQuery(q, tags, sort));
+        if (!q && !tags && !sort) {
+            return redirect("/?tags=system_approved&sort=random");
         }
-        return { q, tags, sort };
+        sort = getSortOptionFromString(url.searchParams.get("sort"));
+        return (
+            queryClient.getQueryData(worldsQuery(q, tags, sort).queryKey) ??
+            (await queryClient.fetchQuery(worldsQuery(q, tags, sort)))
+        );
     };
 
 function Worlds() {
-    const { q, tags, sort } = useLoaderData() as Awaited<ReturnType<ReturnType<typeof loader>>>;
+    const worlds = useLoaderData() as LimitedWorld[];
     const { state } = useNavigation();
-    const {
-        // isLoading,
-        // error,
-        data: worlds,
-        // isFetching,
-    } = useQuery<LimitedWorld[] | null, Error>(worldsQuery(q, tags, sort));
-    // } = useQuery<LimitedWorld[], Error>(worldsQuery("q", [], ""));
 
     if (state === "loading") {
-        return <div>Loading...</div>;
+        return (
+            <CenteredContainer>
+                <CircularProgress size={60} />
+            </CenteredContainer>
+        );
     }
 
-    if (worlds === null) return <div>An error has occurred</div>;
+    if (!worlds || worlds.length === 0) return <CenteredContainer>No results found</CenteredContainer>;
 
     return (
         <>
@@ -124,13 +134,14 @@ function Worlds() {
                                     </NoDecorationLink>
                                 </WorldTitle>
                                 <WorldBroadcaster variant="body2">
-                                    <NoDecorationLink
+                                    {/* <NoDecorationLink
                                         to={`/author/${world.authorId}`}
                                         state={{ world }}
                                         title={world.authorName}
                                     >
                                         {world.authorName}
-                                    </NoDecorationLink>
+                                    </NoDecorationLink> */}
+                                    {world.authorName}
                                 </WorldBroadcaster>
                                 <Tags tags={world.tags} />
                             </WorldContainer>

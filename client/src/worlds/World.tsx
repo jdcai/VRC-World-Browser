@@ -5,7 +5,7 @@ import { Params, useLoaderData, useNavigation } from "react-router-dom";
 import { QueryClient } from "@tanstack/react-query";
 import { getWorld } from "../services/WorldService";
 import Tags from "../tags/Tags";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 
 const WorldContainer = styled.div`
     display: flex;
@@ -38,6 +38,15 @@ const StyledWorldContainerRight = styled.div`
     max-width: 33.33%;
 `;
 
+const CenteredContainer = styled.div`
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-top: ${(props) => props.theme.spacing(2)};
+`;
+
 const worldQuery = (worldId: string) => ({
     queryKey: ["world", worldId],
     queryFn: () => getWorld(worldId),
@@ -58,9 +67,16 @@ export const loader =
 const World = () => {
     const world = useLoaderData() as VRWorld;
     const { state } = useNavigation();
-    if (state === "loading") return <div>Loading...</div>;
 
-    if (world === null) return <div>An error has occurred</div>;
+    if (state === "loading") {
+        return (
+            <CenteredContainer>
+                <CircularProgress size={60} />
+            </CenteredContainer>
+        );
+    }
+
+    if (world === null) return <CenteredContainer>World not found</CenteredContainer>;
 
     return (
         <>
