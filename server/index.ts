@@ -17,10 +17,6 @@ const port = process.env.PORT || 3000;
 app.use(express.static("public"));
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
 const configuration = new Configuration({
     username: process.env.USER,
     password: process.env.PASSWORD,
@@ -143,7 +139,7 @@ app.get("/api/worlds", (req: Request<{}, {}, {}, WorldsQuery>, res) => {
         )
         .then((resp) => {
             const worlds = resp.data;
-            console.log("worlds");
+            console.log("worlds", req.query);
             res.send(worlds);
         })
         .catch((err) => {
@@ -159,13 +155,17 @@ app.get("/api/world/:id", (req, res) => {
             .getWorld(worldId)
             .then((resp) => {
                 const worlds = resp.data;
-                console.log("world");
+                console.log("world", req.params.id);
                 res.send(worlds);
             })
             .catch((err) => {
                 res.status(500).send(`Error: ${err.message}`);
             });
     }
+});
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.listen(port, () => {

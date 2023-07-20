@@ -27,9 +27,6 @@ const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 app.use(express_1.default.static("public"));
 app.use(express_1.default.json());
-app.get("/", (req, res) => {
-    res.sendFile(path_1.default.join(__dirname, "public", "index.html"));
-});
 const configuration = new vrchat_1.Configuration({
     username: process.env.USER,
     password: process.env.PASSWORD,
@@ -118,7 +115,7 @@ app.get("/api/worlds", (req, res) => {
         .searchWorlds(options.featured, options.sort, options.user, options.userId, options.n, options.order, options.offset, options.search, options.tag, options.notag, options.releaseStatus, options.maxUnityVersion, options.minUnityVersion, options.platform, options.options)
         .then((resp) => {
         const worlds = resp.data;
-        console.log("worlds");
+        console.log("worlds", req.query);
         res.send(worlds);
     })
         .catch((err) => {
@@ -133,13 +130,16 @@ app.get("/api/world/:id", (req, res) => {
             .getWorld(worldId)
             .then((resp) => {
             const worlds = resp.data;
-            console.log("world");
+            console.log("world", req.params.id);
             res.send(worlds);
         })
             .catch((err) => {
             res.status(500).send(`Error: ${err.message}`);
         });
     }
+});
+app.get("*", (req, res) => {
+    res.sendFile(path_1.default.join(__dirname, "index.html"));
 });
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
