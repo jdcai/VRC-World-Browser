@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import styled from "styled-components";
-import { Form, Link, useSearchParams } from "react-router-dom";
+import { Form, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { SortOption, getSortOptionFromString, getTagsFromString } from "./services/WorldService";
 
 const StyledForm = styled(Form)`
@@ -45,7 +45,8 @@ const StyledHomeLink = styled(Link)`
 `;
 
 const Header = () => {
-    let [searchParams, setSearchParams] = useSearchParams();
+    let [searchParams] = useSearchParams();
+    const navigate = useNavigate();
 
     const [searchTerm, setSearchTerm] = useState(searchParams.get("q") ?? "");
     const [sortOption, setSortOption] = useState(getSortOptionFromString(searchParams.get("sort")));
@@ -85,7 +86,7 @@ const Header = () => {
             params.delete("tags");
         }
         params.set("sort", sortOption);
-        setSearchParams(params);
+        navigate(`/?${params.toString()}`);
     };
 
     useEffect(() => {

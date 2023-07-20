@@ -19,8 +19,12 @@ const WorldInfoContainer = styled.div`
     padding: ${(props) => props.theme.spacing(2)};
 `;
 
+const WorldImageContainer = styled.div`
+    width: 66.67%;
+`;
+
 const WorldImage = styled.img`
-    max-width: 66.67%;
+    width: 100%;
 `;
 const StyledTags = styled(Tags)`
     margin-top: ${(props) => props.theme.spacing(1)};
@@ -82,7 +86,9 @@ const World = () => {
         <>
             {world && (
                 <WorldContainer>
-                    <WorldImage src={world.imageUrl} alt={world.name} />
+                    <WorldImageContainer>
+                        <WorldImage src={world.imageUrl} alt={world.name} />
+                    </WorldImageContainer>
                     <StyledWorldContainerRight>
                         <WorldInfoContainer>
                             <h2>{world.name}</h2>
