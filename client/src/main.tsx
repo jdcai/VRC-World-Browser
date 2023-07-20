@@ -19,7 +19,7 @@ const darkTheme = createTheme({
 const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            staleTime: 15000,
+            staleTime: 60000,
             refetchOnWindowFocus: false,
         },
     },

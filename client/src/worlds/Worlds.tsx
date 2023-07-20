@@ -76,7 +76,7 @@ const CenteredContainer = styled.div`
 `;
 
 const worldsQuery = (q: string | null, tags: string[] | undefined, sort: string) => ({
-    queryKey: ["worlds", q, tags, sort],
+    queryKey: ["worlds", { q, tags, sort }],
     queryFn: () => getWorlds(q, tags, sort as SortOption),
 });
 
@@ -92,6 +92,11 @@ export const loader =
             return redirect("/?tags=system_approved&sort=random");
         }
         sort = getSortOptionFromString(url.searchParams.get("sort"));
+        if (sort === SortOption.Random) {
+            // Invalidate query early if it has random sort since results will change
+            queryClient.invalidateQueries(["worlds", { sort: "random" }]);
+            return queryClient.fetchQuery(worldsQuery(q, tags, sort));
+        }
         return (
             queryClient.getQueryData(worldsQuery(q, tags, sort).queryKey) ??
             (await queryClient.fetchQuery(worldsQuery(q, tags, sort)))
@@ -117,6 +122,9 @@ function Worlds() {
             <WorldsContainer>
                 {worlds &&
                     worlds.map((world) => {
+                        if (!world) {
+                            return null;
+                        }
                         return (
                             <WorldContainer key={world.id}>
                                 <NoDecorationLink to={`/world/${world.id}`} state={{ world }}>
