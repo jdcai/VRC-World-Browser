@@ -94,7 +94,6 @@ export const loader =
         sort = getSortOptionFromString(url.searchParams.get("sort"));
         if (sort === SortOption.Random) {
             // Invalidate query early if it has random sort since results will change
-            queryClient.invalidateQueries(["worlds", { sort: "random" }]);
             queryClient.invalidateQueries(["worlds", { sort: "random" }], {
                 predicate: (query) => {
                     const lastFetchTime = query.state.dataUpdatedAt;

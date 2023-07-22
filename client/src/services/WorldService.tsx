@@ -6,20 +6,16 @@ import { LimitedWorld, World } from "vrchat";
 export enum SortOption {
     Popularity = "popularity",
     Heat = "heat",
-    Trust = "trust",
     Shuffle = "shuffle",
     Random = "random",
     Favorites = "favorites",
-    PublicationDate = "publicationDate",
-    LabsPublicationDate = "labsPublicationDate",
-    Created = "created",
-    CreatedAt = "_created_at",
-    Updated = "updated",
-    UpdatedAt = "_updated_at",
+    "Publication Date" = "publicationDate",
+    "Labs Publication Date" = "labsPublicationDate",
+    "Recently Created" = "created",
+    "Recently Updated" = "updated",
     Order = "order",
     Relevance = "relevance",
     Magic = "magic",
-    Name = "name",
 }
 
 export const getSortOptionFromString = (sort: string | null) => {
