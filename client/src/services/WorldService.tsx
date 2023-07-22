@@ -10,8 +10,6 @@ export enum SortOption {
     Shuffle = "shuffle",
     Random = "random",
     Favorites = "favorites",
-    ReportScore = "reportScore",
-    ReportCount = "reportCount",
     PublicationDate = "publicationDate",
     LabsPublicationDate = "labsPublicationDate",
     Created = "created",

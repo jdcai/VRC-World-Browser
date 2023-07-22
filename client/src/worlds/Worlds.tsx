@@ -95,6 +95,14 @@ export const loader =
         if (sort === SortOption.Random) {
             // Invalidate query early if it has random sort since results will change
             queryClient.invalidateQueries(["worlds", { sort: "random" }]);
+            queryClient.invalidateQueries(["worlds", { sort: "random" }], {
+                predicate: (query) => {
+                    const lastFetchTime = query.state.dataUpdatedAt;
+                    const currentTime = Date.now();
+                    const elapsedTime = currentTime - lastFetchTime;
+                    return elapsedTime > 15 * 1000;
+                },
+            });
             return queryClient.fetchQuery(worldsQuery(q, tags, sort));
         }
         return (
@@ -126,32 +134,36 @@ function Worlds() {
                             return null;
                         }
                         return (
-                            <WorldContainer key={world.id}>
-                                <NoDecorationLink to={`/world/${world.id}`} state={{ world }}>
+                            <WorldContainer key={world?.id}>
+                                <NoDecorationLink to={`/world/${world?.id}`} state={{ world }}>
                                     <WorldImageContainer>
-                                        <WorldThumbnail src={world.thumbnailImageUrl} alt={world.name}></WorldThumbnail>
+                                        <WorldThumbnail
+                                            src={world?.thumbnailImageUrl}
+                                            alt={world?.name}
+                                        ></WorldThumbnail>
                                         <FavoriteCount>
-                                            {world.favorites.toLocaleString()} <StarOutlineIcon fontSize="small" />
+                                            {world?.favorites?.toLocaleString() ?? 0}{" "}
+                                            <StarOutlineIcon fontSize="small" />
                                         </FavoriteCount>
-                                        <UpdatedData>Updated {moment(world.updated_at).fromNow()}</UpdatedData>
+                                        <UpdatedData>Updated {moment(world?.updated_at).fromNow()}</UpdatedData>
                                     </WorldImageContainer>
                                 </NoDecorationLink>
                                 <WorldTitle variant="body1">
-                                    <NoDecorationLink to={`/world/${world.id}`} state={{ world }} title={world.name}>
-                                        {world.name}
+                                    <NoDecorationLink to={`/world/${world?.id}`} state={{ world }} title={world?.name}>
+                                        {world?.name}
                                     </NoDecorationLink>
                                 </WorldTitle>
                                 <WorldBroadcaster variant="body2">
                                     {/* <NoDecorationLink
-                                        to={`/author/${world.authorId}`}
+                                        to={`/author/${world?.authorId}`}
                                         state={{ world }}
-                                        title={world.authorName}
+                                        title={world?.authorName}
                                     >
-                                        {world.authorName}
+                                        {world?.authorName}
                                     </NoDecorationLink> */}
-                                    {world.authorName}
+                                    {world?.authorName}
                                 </WorldBroadcaster>
-                                <Tags tags={world.tags} />
+                                <Tags tags={world?.tags} />
                             </WorldContainer>
                         );
                     })}
