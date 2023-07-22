@@ -75,14 +75,20 @@ const CenteredContainer = styled.div`
     margin-top: ${(props) => props.theme.spacing(2)};
 `;
 
-const worldsQuery = (q: string | null, tags: string[] | undefined, sort: string) => ({
+const worldsQuery = (q: string | null, tags: string[] | undefined, sort: string, abortSignal: AbortSignal) => ({
     queryKey: ["worlds", { q, tags, sort }],
-    queryFn: () => getWorlds(q, tags, sort as SortOption),
+    queryFn: () => getWorlds(q, tags, sort as SortOption, abortSignal),
 });
+
+let abortController: AbortController;
 
 export const loader =
     (queryClient: QueryClient) =>
     async ({ request }: any) => {
+        if (abortController) {
+            abortController.abort();
+        }
+        abortController = new AbortController();
         const url = new URL(request.url);
         const q = url.searchParams.get("q");
         let tags = url.searchParams.get("tags")?.split(",");
@@ -94,7 +100,6 @@ export const loader =
         sort = getSortOptionFromString(url.searchParams.get("sort"));
         if (sort === SortOption.Random) {
             // Invalidate query early if it has random sort since results will change
-            queryClient.invalidateQueries(["worlds", { sort: "random" }]);
             queryClient.invalidateQueries(["worlds", { sort: "random" }], {
                 predicate: (query) => {
                     const lastFetchTime = query.state.dataUpdatedAt;
@@ -103,11 +108,11 @@ export const loader =
                     return elapsedTime > 15 * 1000;
                 },
             });
-            return queryClient.fetchQuery(worldsQuery(q, tags, sort));
+            return queryClient.fetchQuery(worldsQuery(q, tags, sort, abortController.signal));
         }
         return (
-            queryClient.getQueryData(worldsQuery(q, tags, sort).queryKey) ??
-            (await queryClient.fetchQuery(worldsQuery(q, tags, sort)))
+            queryClient.getQueryData(worldsQuery(q, tags, sort, abortController.signal).queryKey) ??
+            (await queryClient.fetchQuery(worldsQuery(q, tags, sort, abortController.signal)))
         );
     };
 

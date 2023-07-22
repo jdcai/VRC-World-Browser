@@ -33,6 +33,8 @@ const axiosConfiguration: RateLimitedAxiosInstance = rateLimit(
 
 wrapper(axiosConfiguration);
 axiosConfiguration.defaults.withCredentials = true;
+// Need https://github.com/aishek/axios-rate-limit/issues/21 for abort controller to work with rate limit
+let controller: AbortController | null = null;
 
 async function initVRC() {
     try {
@@ -101,6 +103,16 @@ type WorldsQuery = {
 };
 
 app.get("/api/worlds", (req: Request<{}, {}, {}, WorldsQuery>, res) => {
+    req.on("close", () => {
+        console.log("close");
+        if (controller) {
+            console.log("closed");
+            controller.abort();
+        }
+    });
+
+    controller = new AbortController();
+    axiosConfiguration.defaults.signal = controller.signal;
     const worldsApi = new WorldsApi(configuration, undefined, axiosConfiguration);
     const options = {
         featured: false,
@@ -140,6 +152,7 @@ app.get("/api/worlds", (req: Request<{}, {}, {}, WorldsQuery>, res) => {
         .then((resp) => {
             const worlds = resp.data;
             console.log("worlds", req.query);
+            controller = null;
             res.send(worlds);
         })
         .catch((err) => {

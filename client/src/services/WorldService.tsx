@@ -36,12 +36,14 @@ export const getWorlds = async (
     q: string | null,
     tags: string[] | undefined,
     sort: SortOption,
+    abortSignal: AbortSignal,
 ): Promise<LimitedWorld[] | null> => {
     const formattedTags = tags?.map((tag) =>
         !tag.startsWith("system_") && !tag.startsWith("admin_") ? `author_tag_${tag}` : tag,
     );
     try {
         const response: AxiosResponse<LimitedWorld[]> = await axios.get("/api/worlds", {
+            signal: abortSignal,
             method: "GET",
             params: {
                 q,

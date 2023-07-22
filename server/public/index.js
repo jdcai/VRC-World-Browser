@@ -38,6 +38,7 @@ const axiosConfiguration = (0, axios_rate_limit_1.default)(axios_1.default.creat
 }), {});
 (0, axios_cookiejar_support_1.wrapper)(axiosConfiguration);
 axiosConfiguration.defaults.withCredentials = true;
+let controller = null;
 function initVRC() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -93,6 +94,15 @@ const getSortOptionFromString = (sort) => {
 };
 app.get("/api/worlds", (req, res) => {
     var _a, _b, _c;
+    req.on("close", () => {
+        console.log("close");
+        if (controller) {
+            console.log("closed");
+            controller.abort();
+        }
+    });
+    controller = new AbortController();
+    axiosConfiguration.defaults.signal = controller.signal;
     const worldsApi = new vrchat_1.WorldsApi(configuration, undefined, axiosConfiguration);
     const options = {
         featured: false,
@@ -116,6 +126,7 @@ app.get("/api/worlds", (req, res) => {
         .then((resp) => {
         const worlds = resp.data;
         console.log("worlds", req.query);
+        controller = null;
         res.send(worlds);
     })
         .catch((err) => {
