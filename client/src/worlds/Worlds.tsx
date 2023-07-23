@@ -7,6 +7,13 @@ import { Link, redirect, useLoaderData, useNavigation } from "react-router-dom";
 import Tags from "../tags/Tags";
 import { CircularProgress, Typography } from "@mui/material";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
+import WorldImage from "../common/WorldImage";
+
+const NoDecorationLink = styled(Link)`
+    text-decoration: none;
+    color: inherit;
+`;
+const WorldImageLink = styled(NoDecorationLink)``;
 
 const WorldsContainer = styled.div`
     display: grid;
@@ -23,10 +30,6 @@ const WorldContainer = styled.div`
 const WorldImageContainer = styled.div`
     position: relative;
     cursor: pointer;
-`;
-
-const WorldThumbnail = styled.img`
-    width: 100%;
 `;
 
 const TruncatedTypography = styled(Typography)`
@@ -60,10 +63,6 @@ const FavoriteCount = styled(WorldInfo)`
 const UpdatedData = styled(WorldInfo)`
     bottom: 0;
     right: 0;
-`;
-const NoDecorationLink = styled(Link)`
-    text-decoration: none;
-    color: inherit;
 `;
 
 const CenteredContainer = styled.div`
@@ -134,19 +133,20 @@ function Worlds() {
                         }
                         return (
                             <WorldContainer key={world?.id}>
-                                <NoDecorationLink to={`/world/${world?.id}`} state={{ world }}>
+                                <WorldImageLink to={`/world/${world?.id}`} state={{ world }}>
                                     <WorldImageContainer>
-                                        <WorldThumbnail
-                                            src={world?.thumbnailImageUrl}
-                                            alt={world?.name}
-                                        ></WorldThumbnail>
+                                        <WorldImage
+                                            thumbnailImageUrl={world?.thumbnailImageUrl}
+                                            imageUrl={world?.imageUrl}
+                                            title={world?.name}
+                                        ></WorldImage>
                                         <FavoriteCount>
                                             {world?.favorites?.toLocaleString() ?? 0}{" "}
                                             <StarOutlineIcon fontSize="small" />
                                         </FavoriteCount>
                                         <UpdatedData>Updated {moment(world?.updated_at).fromNow()}</UpdatedData>
                                     </WorldImageContainer>
-                                </NoDecorationLink>
+                                </WorldImageLink>
                                 <WorldTitle variant="body1">
                                     <NoDecorationLink to={`/world/${world?.id}`} state={{ world }} title={world?.name}>
                                         {world?.name}

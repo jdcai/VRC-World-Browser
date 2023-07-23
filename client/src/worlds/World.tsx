@@ -6,12 +6,14 @@ import { QueryClient } from "@tanstack/react-query";
 import { getWorld } from "../services/WorldService";
 import Tags from "../tags/Tags";
 import { Button, CircularProgress } from "@mui/material";
+import WorldImage from "../common/WorldImage";
 
 const WorldContainer = styled.div`
     display: flex;
     height: 100%;
     width: 100%;
     background-color: #121212;
+    justify-content: center;
 `;
 
 const WorldInfoContainer = styled.div`
@@ -19,19 +21,13 @@ const WorldInfoContainer = styled.div`
     padding: ${(props) => props.theme.spacing(2)};
 `;
 
-const WorldImageContainer = styled.div`
-    width: 66.67%;
-`;
+const WorldImageContainer = styled.div``;
 
-const WorldImage = styled.img`
-    width: 100%;
-`;
 const StyledTags = styled(Tags)`
     margin-top: ${(props) => props.theme.spacing(1)};
 `;
 
 const StyledButtonContainer = styled.div`
-    margin-top: auto;
     margin-left: auto;
     margin-right: ${(props) => props.theme.spacing(2)};
 `;
@@ -49,6 +45,10 @@ const CenteredContainer = styled.div`
     align-items: center;
     justify-content: center;
     margin-top: ${(props) => props.theme.spacing(2)};
+`;
+
+const CustomWorldImage = styled(WorldImage)`
+    max-height: calc(100vh - 64px);
 `;
 
 const worldQuery = (worldId: string) => ({
@@ -87,7 +87,7 @@ const World = () => {
             {world && (
                 <WorldContainer>
                     <WorldImageContainer>
-                        <WorldImage src={world.imageUrl} alt={world.name} />
+                        <CustomWorldImage thumbnailImageUrl={""} imageUrl={world?.imageUrl} title={world?.name} />
                     </WorldImageContainer>
                     <StyledWorldContainerRight>
                         <WorldInfoContainer>
