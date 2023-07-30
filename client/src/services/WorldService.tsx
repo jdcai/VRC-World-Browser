@@ -34,7 +34,12 @@ export const getWorlds = async (
     sort: SortOption,
 ): Promise<LimitedWorld[] | null> => {
     const formattedTags = tags?.map((tag) =>
-        !tag.startsWith("system_") && !tag.startsWith("admin_") ? `author_tag_${tag}` : tag,
+        tag.startsWith("system_") ||
+        tag.startsWith("admin_") ||
+        tag.startsWith("content_") ||
+        tag.startsWith("feature_")
+            ? tag
+            : `author_tag_${tag}`,
     );
     try {
         const response: AxiosResponse<LimitedWorld[]> = await axios.get("/api/worlds", {

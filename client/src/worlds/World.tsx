@@ -5,14 +5,17 @@ import { Params, useLoaderData, useNavigation } from "react-router-dom";
 import { QueryClient } from "@tanstack/react-query";
 import { getWorld } from "../services/WorldService";
 import Tags from "../tags/Tags";
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, Divider } from "@mui/material";
 import WorldImage from "../common/WorldImage";
+import WorldDetail from "./WorldDetail";
 
 const WorldContainer = styled.div`
     display: flex;
-    height: 100%;
-    width: 100%;
+    flex-direction: column;
     background-color: #121212;
+`;
+const MainWorldContent = styled.div`
+    display: flex;
     justify-content: center;
 `;
 
@@ -47,8 +50,18 @@ const CenteredContainer = styled.div`
     margin-top: ${(props) => props.theme.spacing(2)};
 `;
 
+const WorldDetailsContainer = styled.div`
+    margin-top: ${(props) => props.theme.spacing(1)};
+    margin-bottom: ${(props) => props.theme.spacing(1)};
+`;
+const InnerWorldDetailsContainer = styled.div`
+    display: flex;
+    justify-content: space-evenly;
+    height: 80px;
+`;
+
 const CustomWorldImage = styled(WorldImage)`
-    max-height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px - 104px);
 `;
 
 const worldQuery = (worldId: string) => ({
@@ -59,7 +72,6 @@ const worldQuery = (worldId: string) => ({
 export const loader =
     (queryClient: QueryClient) =>
     async ({ params }: { params: Params<string> }) => {
-        // console.log("world", params);
         if (params.worldId) {
             const query = worldQuery(params.worldId);
 
@@ -86,26 +98,55 @@ const World = () => {
         <>
             {world && (
                 <WorldContainer>
-                    <WorldImageContainer>
-                        <CustomWorldImage thumbnailImageUrl={""} imageUrl={world?.imageUrl} title={world?.name} />
-                    </WorldImageContainer>
-                    <StyledWorldContainerRight>
-                        <WorldInfoContainer>
-                            <h2>{world.name}</h2>
-                            <h3>By {world.authorName}</h3>
-                            <div>{world.description}</div>
-                            <div>{world.favorites?.toLocaleString()} favorites</div>
-                            <div>Updated {moment(world.updated_at).fromNow()}</div>
-                            <div>Created {moment(world.created_at).fromNow()}</div>
+                    <MainWorldContent>
+                        <WorldImageContainer>
+                            <CustomWorldImage thumbnailImageUrl={""} imageUrl={world?.imageUrl} title={world?.name} />
+                        </WorldImageContainer>
+                        <StyledWorldContainerRight>
+                            <WorldInfoContainer>
+                                <h2>{world?.name}</h2>
+                                <h3>By {world?.authorName}</h3>
+                                <div>{world?.description}</div>
+                                <StyledTags tags={world?.tags} />
+                            </WorldInfoContainer>
 
-                            <StyledTags tags={world.tags} />
-                        </WorldInfoContainer>
-                        <StyledButtonContainer>
-                            <Button href={`https://vrchat.com/home/world/${world.id}`} variant="outlined">
-                                View on VR chat
-                            </Button>
-                        </StyledButtonContainer>
-                    </StyledWorldContainerRight>
+                            <StyledButtonContainer>
+                                <Button href={`https://vrchat.com/home/world/${world?.id}`} variant="outlined">
+                                    View on VR chat
+                                </Button>
+                            </StyledButtonContainer>
+                        </StyledWorldContainerRight>
+                    </MainWorldContent>
+                    <WorldDetailsContainer>
+                        <Divider variant="middle" />
+                        <InnerWorldDetailsContainer>
+                            <WorldDetail title="Visits" value={world?.visits?.toLocaleString()} />
+                            <WorldDetail title="Favorites" value={world?.favorites?.toLocaleString()} />
+                            <WorldDetail title="Capacity" value={world?.capacity?.toLocaleString()} />
+                            <WorldDetail title="Public Players" value={world?.publicOccupants?.toLocaleString()} />
+                            <WorldDetail title="Private Players" value={world?.privateOccupants?.toLocaleString()} />
+                            <WorldDetail
+                                title="Created"
+                                value={moment(world?.created_at).fromNow()}
+                                formattedDate={moment(world?.created_at).format("ll")}
+                            />
+                            {world?.publicationDate !== "none" && (
+                                <WorldDetail
+                                    title="Published"
+                                    value={moment(world?.publicationDate).fromNow()}
+                                    formattedDate={moment(world?.publicationDate).format("ll")}
+                                />
+                            )}
+                            <WorldDetail
+                                title="Updated"
+                                value={moment(world?.updated_at).fromNow()}
+                                formattedDate={moment(world?.updated_at).format("ll")}
+                            />
+                            <WorldDetail title="Popularity" value={world?.popularity?.toLocaleString()} />
+                            <WorldDetail title="Heat" value={world?.heat?.toLocaleString()} />
+                        </InnerWorldDetailsContainer>
+                        <Divider variant="middle" />
+                    </WorldDetailsContainer>
                 </WorldContainer>
             )}
         </>

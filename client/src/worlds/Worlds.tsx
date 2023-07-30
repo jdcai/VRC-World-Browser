@@ -3,16 +3,13 @@ import { LimitedWorld } from "vrchat";
 import { QueryClient } from "@tanstack/react-query";
 import styled from "styled-components";
 import moment from "moment";
-import { Link, redirect, useLoaderData, useNavigation } from "react-router-dom";
+import { redirect, useLoaderData, useNavigation } from "react-router-dom";
 import Tags from "../tags/Tags";
 import { CircularProgress, Typography } from "@mui/material";
 import StarOutlineIcon from "@mui/icons-material/StarOutline";
 import WorldImage from "../common/WorldImage";
+import { NoDecorationLink } from "../common/NoDecorationLink";
 
-const NoDecorationLink = styled(Link)`
-    text-decoration: none;
-    color: inherit;
-`;
 const WorldImageLink = styled(NoDecorationLink)``;
 
 const WorldsContainer = styled.div`
@@ -141,10 +138,12 @@ function Worlds() {
                                             title={world?.name}
                                         ></WorldImage>
                                         <FavoriteCount>
-                                            {world?.favorites?.toLocaleString() ?? 0}{" "}
+                                            {world?.favorites?.toLocaleString() ?? 0}
                                             <StarOutlineIcon fontSize="small" />
                                         </FavoriteCount>
-                                        <UpdatedData>Updated {moment(world?.updated_at).fromNow()}</UpdatedData>
+                                        <UpdatedData title={moment(world?.updated_at).format("ll")}>
+                                            Updated {moment(world?.updated_at).fromNow()}
+                                        </UpdatedData>
                                     </WorldImageContainer>
                                 </WorldImageLink>
                                 <WorldTitle variant="body1">
@@ -153,14 +152,9 @@ function Worlds() {
                                     </NoDecorationLink>
                                 </WorldTitle>
                                 <WorldBroadcaster variant="body2">
-                                    {/* <NoDecorationLink
-                                        to={`/author/${world?.authorId}`}
-                                        state={{ world }}
-                                        title={world?.authorName}
-                                    >
-                                        {world?.authorName}
-                                    </NoDecorationLink> */}
+                                    {/* <NoDecorationLink to={`/?q=${world?.authorName}`} title={world?.authorName}> */}
                                     {world?.authorName}
+                                    {/* </NoDecorationLink> */}
                                 </WorldBroadcaster>
                                 <Tags tags={world?.tags} />
                             </WorldContainer>
